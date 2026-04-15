@@ -10,7 +10,7 @@ defmodule AshStoragePGLO.Service do
 
       storage do
         service {AshStoragePGLO.Service,
-                 resource: MyApp.Gallery.StorageLO,
+                 lo_resource: MyApp.Gallery.StorageLO,
                  base_url: "/storage"}
       end
 
@@ -18,11 +18,11 @@ defmodule AshStoragePGLO.Service do
 
       forward "/storage", AshStorage.Plug.Proxy,
         service: {AshStoragePGLO.Service,
-                  resource: MyApp.Gallery.StorageLO}
+                  lo_resource: MyApp.Gallery.StorageLO}
 
   ## Options
 
-  - `:resource` — required. The `AshStoragePGLO.Resource` mapping resource.
+  - `:lo_resource` — required. The `AshStoragePGLO.Resource` mapping resource.
   - `:base_url` — required for `url/2`. The path where `AshStorage.Plug.Proxy`
     is mounted.
   """
@@ -36,7 +36,7 @@ defmodule AshStoragePGLO.Service do
   @impl true
   def service_opts_fields do
     [
-      resource: [type: :atom, allow_nil?: false],
+      lo_resource: [type: :atom, allow_nil?: false],
       base_url: [type: :string]
     ]
   end
@@ -102,11 +102,11 @@ defmodule AshStoragePGLO.Service do
   # `ash_storage` persists `service_opts` on the blob row and reconstitutes
   # them later for async purge / dependent-attachment cleanup. The stored
   # form goes through `Ash.Type.Keyword.cast_stored/2`, which doesn't cast
-  # individual field values — so our `:resource` atom comes back as a
+  # individual field values — so our `:lo_resource` atom comes back as a
   # string on the delete path. Coerce it here so the service works whether
   # it's being called with fresh opts or reconstituted ones.
   defp resource!(%Context{service_opts: opts}) do
-    case Keyword.fetch!(opts, :resource) do
+    case Keyword.fetch!(opts, :lo_resource) do
       module when is_atom(module) -> module
       binary when is_binary(binary) -> String.to_existing_atom(binary)
     end
