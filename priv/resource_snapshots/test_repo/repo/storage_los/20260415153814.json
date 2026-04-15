@@ -1,0 +1,51 @@
+{
+  "attributes": [
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": true,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "key",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "oid",
+      "type": "oid"
+    }
+  ],
+  "base_filter": null,
+  "check_constraints": [],
+  "create_table_options": null,
+  "custom_indexes": [],
+  "custom_statements": [
+    {
+      "code?": false,
+      "down": "DROP TRIGGER IF EXISTS lo_manage_storage_los ON storage_los;",
+      "name": "lo_manage_storage_los",
+      "up": "CREATE TRIGGER lo_manage_storage_los BEFORE UPDATE OR DELETE ON storage_los\n  FOR EACH ROW EXECUTE FUNCTION lo_manage(oid);\n"
+    }
+  ],
+  "has_create_action": true,
+  "hash": "37F1369947C5C278B5F8040822C2B73456EC7BC35538512AABFAE2E10C97D1B1",
+  "identities": [],
+  "multitenancy": {
+    "attribute": null,
+    "global": null,
+    "strategy": null
+  },
+  "repo": "Elixir.AshStoragePGLO.Test.Repo",
+  "schema": null,
+  "table": "storage_los"
+}
