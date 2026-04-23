@@ -1,7 +1,8 @@
 defmodule AshStoragePGLO.ResourceTest do
   use ExUnit.Case, async: true
 
-  alias AshStoragePGLO.Test.StorageLO
+  alias AshStoragePGLO.Resource.Info
+  alias AshStoragePGLO.Test.{StorageLO, StorageLOLargeBufsize}
 
   test "adds :key attribute as the primary key" do
     [pk] = Ash.Resource.Info.primary_key(StorageLO)
@@ -40,6 +41,16 @@ defmodule AshStoragePGLO.ResourceTest do
     data_arg = Enum.find(action.arguments, &(&1.name == :data))
     assert data_arg.allow_nil? == false
     assert data_arg.public? == true
+  end
+
+  describe "bufsize" do
+    test "defaults to 1MB when not configured" do
+      assert Info.bufsize(StorageLO) == 1_048_576
+    end
+
+    test "returns the configured value when set" do
+      assert Info.bufsize(StorageLOLargeBufsize) == 4_194_304
+    end
   end
 
   describe "lo_manage trigger" do

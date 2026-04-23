@@ -1,9 +1,9 @@
 defmodule AshStoragePGLO.ServicePostgresTest do
   use AshStoragePGLO.RepoCase, async: true
 
-  alias AshStoragePGLO.Service
-  alias AshStoragePGLO.Test.StorageLO
   alias AshStorage.Service.Context
+  alias AshStoragePGLO.Service
+  alias AshStoragePGLO.Test.{Repo, StorageLO}
 
   @service_opts [lo_resource: StorageLO, base_url: "/storage"]
 
@@ -27,12 +27,12 @@ defmodule AshStoragePGLO.ServicePostgresTest do
 
   describe "url/2" do
     test "joins base_url and key" do
-      ctx = AshStorage.Service.Context.new(base_url: "/storage")
+      ctx = Context.new(base_url: "/storage")
       assert Service.url("abc/def.jpg", ctx) == "/storage/abc/def.jpg"
     end
 
     test "raises if base_url is missing" do
-      ctx = AshStorage.Service.Context.new([])
+      ctx = Context.new([])
       assert_raise KeyError, fn -> Service.url("abc", ctx) end
     end
   end
@@ -70,7 +70,7 @@ defmodule AshStoragePGLO.ServicePostgresTest do
     assert {:error, :not_found} = Service.download("gone.txt", ctx())
 
     %{num_rows: 0} =
-      AshStoragePGLO.Test.Repo.query!(
+      Repo.query!(
         "SELECT 1 FROM pg_largeobject_metadata WHERE oid = $1",
         [oid]
       )

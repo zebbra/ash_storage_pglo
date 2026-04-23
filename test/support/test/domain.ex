@@ -4,5 +4,6 @@ defmodule AshStoragePGLO.Test.Domain do
 
   resources do
     resource AshStoragePGLO.Test.StorageLO
+    resource AshStoragePGLO.Test.StorageLOLargeBufsize
   end
 end

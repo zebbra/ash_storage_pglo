@@ -3,6 +3,7 @@ defmodule AshStoragePGLO.Resource.Transformers.SetupLO do
   use Spark.Dsl.Transformer
 
   alias Ash.Resource.Builder
+  alias AshPostgres.DataLayer.Info
   alias Spark.Dsl.Extension
   alias Spark.Dsl.Transformer
 
@@ -31,14 +32,12 @@ defmodule AshStoragePGLO.Resource.Transformers.SetupLO do
              allow_nil?: false,
              public?: true,
              writable?: true
-           ),
-         {:ok, dsl_state} <-
-           Builder.add_new_attribute(dsl_state, :oid, AshStoragePGLO.Type.OID,
-             allow_nil?: false,
-             public?: true,
-             writable?: true
            ) do
-      {:ok, dsl_state}
+      Builder.add_new_attribute(dsl_state, :oid, AshStoragePGLO.Type.OID,
+        allow_nil?: false,
+        public?: true,
+        writable?: true
+      )
     end
   end
 
@@ -68,22 +67,20 @@ defmodule AshStoragePGLO.Resource.Transformers.SetupLO do
          {:ok, dsl_state} <-
            Builder.add_action(dsl_state, :read, :read, primary?: true),
          {:ok, dsl_state} <-
-           Builder.add_action(dsl_state, :destroy, :destroy, primary?: true),
-         {:ok, dsl_state} <-
-           Builder.add_action(dsl_state, :action, :download,
-             returns: :binary,
-             allow_nil?: true,
-             transaction?: true,
-             run: AshStoragePGLO.Resource.Actions.Download,
-             arguments: [key_arg]
-           ) do
-      {:ok, dsl_state}
+           Builder.add_action(dsl_state, :destroy, :destroy, primary?: true) do
+      Builder.add_action(dsl_state, :action, :download,
+        returns: :binary,
+        allow_nil?: true,
+        transaction?: true,
+        run: AshStoragePGLO.Resource.Actions.Download,
+        arguments: [key_arg]
+      )
     end
   end
 
   defp maybe_add_trigger(dsl_state) do
     if Extension.get_persisted(dsl_state, :data_layer) == AshPostgres.DataLayer do
-      table = AshPostgres.DataLayer.Info.table(dsl_state)
+      table = Info.table(dsl_state)
 
       cond do
         is_nil(table) -> dsl_state
@@ -95,6 +92,7 @@ defmodule AshStoragePGLO.Resource.Transformers.SetupLO do
     end
   end
 
+  # sobelow_skip ["DOS.StringToAtom"] -- table is a compile-time DSL value, not user input
   defp trigger_name(table), do: String.to_atom("lo_manage_#{table}")
 
   defp trigger_exists?(dsl_state, name) do
