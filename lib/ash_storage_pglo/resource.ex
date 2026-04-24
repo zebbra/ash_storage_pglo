@@ -17,6 +17,7 @@ defmodule AshStoragePGLO.Resource do
         end
 
         lo do
+          bufsize 4_194_304  # optional — defaults to 1MB
         end
       end
 
@@ -32,7 +33,14 @@ defmodule AshStoragePGLO.Resource do
   @lo %Spark.Dsl.Section{
     name: :lo,
     describe: "Configuration for the PG Large Object mapping resource.",
-    schema: []
+    schema: [
+      bufsize: [
+        type: :pos_integer,
+        doc:
+          "Number of bytes transferred per chunk when reading or writing a large object. Defaults to 1MB.",
+        default: 1_048_576
+      ]
+    ]
   }
 
   use Spark.Dsl.Extension,

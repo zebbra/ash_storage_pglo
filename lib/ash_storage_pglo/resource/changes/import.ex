@@ -9,19 +9,18 @@ defmodule AshStoragePGLO.Resource.Changes.Import do
 
   use Ash.Resource.Change
 
+  alias AshPostgres.DataLayer.Info
+
   @impl true
   def change(changeset, _opts, _context) do
     Ash.Changeset.before_action(changeset, fn changeset ->
+      resource = changeset.resource
       data = Ash.Changeset.get_argument(changeset, :data)
-      repo = AshPostgres.DataLayer.Info.repo(changeset.resource)
+      repo = Info.repo(resource)
+      bufsize = AshStoragePGLO.Resource.Info.bufsize(resource)
 
-      case PgLargeObjects.import(repo, data) do
-        {:ok, oid} ->
-          Ash.Changeset.force_change_attribute(changeset, :oid, oid)
-
-        {:error, error} ->
-          Ash.Changeset.add_error(changeset, error)
-      end
+      {:ok, oid} = PgLargeObjects.import(repo, data, bufsize: bufsize)
+      Ash.Changeset.force_change_attribute(changeset, :oid, oid)
     end)
   end
 end
