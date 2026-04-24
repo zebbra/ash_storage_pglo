@@ -37,7 +37,7 @@ defmodule AshStoragePGLO.Resource do
       bufsize: [
         type: :pos_integer,
         doc:
-          "Number of bytes transferred per chunk when reading a large object. Defaults to 1MB.",
+          "Number of bytes transferred per chunk when reading or writing a large object. Defaults to 1MB.",
         default: 1_048_576
       ]
     ]

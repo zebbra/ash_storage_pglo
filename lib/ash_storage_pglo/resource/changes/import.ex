@@ -14,10 +14,12 @@ defmodule AshStoragePGLO.Resource.Changes.Import do
   @impl true
   def change(changeset, _opts, _context) do
     Ash.Changeset.before_action(changeset, fn changeset ->
+      resource = changeset.resource
       data = Ash.Changeset.get_argument(changeset, :data)
-      repo = Info.repo(changeset.resource)
+      repo = Info.repo(resource)
+      bufsize = AshStoragePGLO.Resource.Info.bufsize(resource)
 
-      {:ok, oid} = PgLargeObjects.import(repo, data)
+      {:ok, oid} = PgLargeObjects.import(repo, data, bufsize: bufsize)
       Ash.Changeset.force_change_attribute(changeset, :oid, oid)
     end)
   end
