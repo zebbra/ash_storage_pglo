@@ -30,7 +30,7 @@ defmodule AshStoragePGLO.MixProject do
       {:ash, ash_version("~> 3.5")},
       {:ash_postgres, "~> 2.0"},
       {:ash_oban, "~> 0.7", optional: true},
-      {:ash_storage, github: "StephanH90/ash_storage", branch: "fix/set-relationship-source"},
+      {:ash_storage, github: "ash-project/ash_storage"},
       {:pg_large_objects, "~> 0.2"},
       {:sourceror, "~> 1.7", only: [:dev, :test]},
       # dev/test dependencies
